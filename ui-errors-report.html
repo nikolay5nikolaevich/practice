@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>10 ошибок на фронте — DevOps Sandbox</title>
+<style>
+:root{
+  --ink:#f2efe9;--paper:#08090a;--surface:#111315;--raised:#171a1d;--line:#30343a;
+  --signal:#ff4d3d;--signal-dark:#4c1815;--cyan:#00e7ef;--amber:#f0b429;
+  --muted:#969da5;--dim:#626970;--display:"Bahnschrift","Segoe UI Variable Display","Segoe UI",sans-serif;
+  --body:"Segoe UI Variable Text","Segoe UI",sans-serif;--mono:"Cascadia Code",Consolas,monospace;
+  --read-progress:0%;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--paper)}
+body{margin:0;min-width:320px;min-height:100vh;overflow-x:hidden;color:var(--ink);
+  background:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff05 1px,transparent 1px),radial-gradient(circle at 82% 5%,#ff4d3d1c,transparent 27rem),var(--paper);
+  background-size:32px 32px,32px 32px,auto,auto;font:16px/1.5 var(--body);
+  text-rendering:optimizeLegibility;font-feature-settings:"kern" 1,"liga" 1}
+a{color:inherit} code{font-family:var(--mono);color:var(--cyan)} :focus-visible{outline:2px solid var(--cyan);outline-offset:4px}
+.progress{position:fixed;inset:0 0 auto;z-index:50;height:3px;background:var(--line)}
+.progress::after{content:"";display:block;width:var(--read-progress);height:100%;background:var(--signal)}
+.hero{position:relative;display:grid;min-height:100dvh;place-items:center;padding:clamp(1.5rem,6vw,6rem);border-bottom:1px solid var(--line);overflow:hidden;text-align:center}
+.hero::before{display:none}
+.kicker,.index,.toc-label,.mock-label{font:700 .72rem/1.2 var(--mono);letter-spacing:.09em;text-transform:uppercase}
+.kicker{position:relative;margin:0 0 2rem;color:var(--signal)}
+.hero h1{position:relative;max-width:11ch;margin:0;font:800 clamp(4rem,12vw,11rem)/.88 var(--display);letter-spacing:-.065em;text-wrap:balance}
+.hero-foot{position:relative;display:flex;flex-wrap:wrap;gap:2rem clamp(2rem,7vw,7rem);align-items:end;margin-top:clamp(2rem,7vw,6rem)}
+.hero-intro{max-width:66ch;margin:0;color:#c6cbd0;font-size:clamp(1rem,1.5vw,1.25rem)}
+.count{display:flex;align-items:end;gap:.8rem;margin:0;color:var(--muted);font-family:var(--mono)}
+.count strong{color:var(--signal);font:800 3.8rem/.8 var(--display)}
+.jump{display:inline-flex;min-height:44px;align-items:center;gap:.7rem;padding:.8rem 1rem;border:1px solid #60666d;text-decoration:none;
+  font:700 .76rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.jump:hover{border-color:var(--signal);background:var(--signal-dark)}
+.layout{display:grid;grid-template-columns:minmax(14rem,19rem) minmax(0,1fr);max-width:1600px;margin:auto}
+.toc{position:sticky;top:0;align-self:start;height:100vh;padding:2rem;border-right:1px solid var(--line);
+  background:#08090aed;backdrop-filter:blur(14px);overflow-y:auto}
+.toc-label{margin:0 0 1rem;color:var(--muted)} .toc ol{margin:0;padding:0;list-style:none}
+.toc a{display:grid;grid-template-columns:2.7rem 1fr;gap:.7rem;min-height:44px;padding:.75rem 0;border-top:1px solid var(--line);
+  color:#bcc1c6;text-decoration:none;font-size:.86rem;transition:color .15s,padding-left .15s}
+.toc a::before{content:attr(data-index);color:var(--dim);font:700 .68rem/1.7 var(--mono)}
+.toc a:hover,.toc a[aria-current="true"]{padding-left:.4rem;color:var(--ink)}
+.toc a[aria-current="true"]::before{color:var(--signal)}
+main{min-width:0}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(14rem,24rem);gap:2rem;padding:clamp(3rem,7vw,7rem) clamp(1.25rem,5vw,5rem);border-bottom:1px solid var(--line)}
+.intro h2{max-width:15ch;margin:0;font:750 clamp(2.3rem,5vw,5rem)/.95 var(--display);letter-spacing:-.04em}
+.intro p{max-width:68ch;margin:0;color:var(--muted)}
+.incident{position:relative;min-width:0;padding:clamp(3rem,7vw,7rem) clamp(1.25rem,5vw,5rem);border-bottom:1px solid var(--line);scroll-margin-top:1rem}
+.incident::before{content:attr(data-mark);position:absolute;top:.25rem;right:1rem;color:transparent;
+  font:900 clamp(5rem,14vw,13rem)/1 var(--display);letter-spacing:-.08em;-webkit-text-stroke:1px #ffffff10}
+.incident header{position:relative}.index{display:block;margin-bottom:1rem;color:var(--signal)}
+.incident h2{max-width:18ch;margin:0;font:760 clamp(2.2rem,5vw,5.1rem)/.95 var(--display);letter-spacing:-.045em;text-wrap:balance}
+.analysis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin:clamp(2rem,5vw,4rem) 0;border:1px solid var(--line);background:var(--line)}
+.analysis section{min-width:0;padding:clamp(1rem,2.4vw,2rem);background:var(--surface)}
+.analysis h3{margin:0 0 1rem;color:var(--muted);font:700 .72rem/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase}
+.analysis p{max-width:72ch;margin:0;color:#d4d7da;overflow-wrap:anywhere}
+.evidence{max-width:100%;margin:0;border:1px solid #5b626a;background:#050607;overflow:hidden}
+.evidence figcaption{padding:.8rem 1rem;border-top:1px solid var(--line);color:var(--muted);font:.72rem/1.4 var(--mono)}
+.mock{position:relative;min-width:0;min-height:clamp(20rem,38vw,31rem);padding:clamp(.7rem,3vw,2rem);overflow:hidden;
+  background:linear-gradient(#00e7ef08 1px,transparent 1px),linear-gradient(90deg,#00e7ef06 1px,transparent 1px),#080a0c;background-size:24px 24px;font-family:var(--mono)}
+.bar{display:flex;justify-content:space-between;align-items:center;min-height:2.3rem;padding:.5rem .7rem;border:1px solid #252a2f;background:#070809;color:var(--dim);font-size:.68rem}
+.lights{display:flex;gap:.3rem}.lights i{width:.45rem;height:.45rem;border-radius:50%;background:#353a40}.lights i:first-child{background:var(--signal)}
+.panel{min-width:0;border:1px solid #30363c;background:#0c0e10;color:#d0d4d8}.panel-head{padding:.65rem .8rem;border-bottom:1px solid #252a2f;color:var(--cyan);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase}
+.panel-body{min-width:0;padding:1rem}.code{display:block;max-width:100%;margin:0;color:var(--cyan);font:clamp(.66rem,1.2vw,.94rem)/1.7 var(--mono)}
+.code .value{color:var(--amber)}.callout{position:absolute;z-index:5;display:inline-flex;max-width:min(18rem,68%);min-height:2rem;align-items:center;padding:.45rem .65rem;
+  border:1px solid var(--signal);background:#4c1815ee;color:#ffd2ce;font:700 .66rem/1.25 var(--mono);overflow-wrap:anywhere}
+.callout::before{content:"";position:absolute;width:2.8rem;height:1px;background:var(--signal)}
+.overflow-box{position:absolute;inset:18% auto auto 7%;width:min(28rem,56%)}.overflow-box .panel-body{overflow:visible}
+.overflow-box .code{width:48rem;max-width:none;white-space:pre}.overflow-box::after{content:"";position:absolute;top:3.1rem;right:-1px;width:2px;height:5.2rem;background:var(--signal);box-shadow:0 0 0 4px #ff4d3d1c}
+.demo-overflow .callout{top:33%;right:5%}.demo-overflow .callout::before{right:100%;transform:rotate(-8deg)}
+.knowledge{position:absolute;inset:12% 8% 13% 16%;height:auto;overflow:hidden}.wide{min-width:54rem;padding:1rem}.wide h4{margin:0 0 1rem;font-family:var(--display);font-size:1.1rem}
+.wide pre{width:49rem;margin:0;padding:1rem;border:1px solid #333;color:var(--cyan);line-height:1.7}
+.fake-scroll{position:absolute;right:0;bottom:0;left:0;height:.8rem;border-top:1px solid #30343a;background:#181b1e}.fake-scroll::after{content:"";display:block;width:42%;height:100%;margin-left:38%;background:#6c737b}
+.demo-hscroll .callout{right:6%;bottom:6%}.demo-hscroll .callout::before{right:90%;bottom:100%;transform:rotate(47deg);width:3.5rem}
+.module-grid{position:absolute;inset:10% 6%;display:grid;grid-template-columns:minmax(11rem,30%) minmax(0,1fr);gap:1px;border:1px solid var(--line);background:var(--line)}
+.module-nav,.module-copy{min-width:0;padding:clamp(.75rem,2vw,1.5rem);background:#101214}.module-nav h4{margin:1rem 0 .5rem;font-size:.75rem}.module-nav .clicked{padding:.45rem;border:1px dashed var(--signal);color:var(--signal)}
+.module-nav p{margin:0;padding:.5rem;color:var(--dim);font-size:.67rem}.module-nav .active{border-left:3px solid var(--cyan);color:var(--cyan);background:#00e7ef0c}
+.module-copy small{color:var(--cyan)}.module-copy h4{margin:1rem 0;font:700 clamp(1.1rem,3vw,2rem)/1.1 var(--display)}.module-copy p{max-width:42ch;color:var(--muted);font:clamp(.65rem,1.4vw,.8rem)/1.5 var(--body)}
+.demo-module .callout{top:10%;right:4%}.demo-module .callout::before{right:100%;top:70%;transform:rotate(20deg)}
+.scroll-panel{position:absolute;inset:10% 14%;overflow:hidden}.scrolled{position:absolute;inset:-53% 0 auto;padding:2rem;color:var(--muted)}.scrolled h4{color:var(--cyan)}.scrolled pre{padding:1rem;border:1px solid #30343a;color:var(--cyan);white-space:pre-wrap}
+.meter{position:absolute;top:0;right:0;width:.6rem;height:100%;background:#191c1f}.meter::after{content:"";position:absolute;top:64%;width:100%;height:24%;background:#707780}
+.position{position:absolute;top:1rem;right:1.4rem;color:var(--signal);font-size:.68rem}.demo-scroll .callout{left:4%;bottom:6%}.demo-scroll .callout::before{left:100%;bottom:100%;transform:rotate(-33deg)}
+.fixed{position:absolute;inset:14% 0 14% 5%;display:grid;grid-template-columns:27% 32% 38% 34%;gap:3px;width:124%}.fixed div{min-width:0;padding:1rem;border:1px solid #30343a;background:#101214}
+.fixed h4,.resize h4{margin:0 0 .8rem;color:var(--cyan);font-size:.68rem}.fixed p,.resize p{color:var(--muted);font-size:.69rem}.fixed .terminal{background:#030404;color:var(--cyan)}.fixed .cut{border-color:var(--signal)}
+.demo-fixed .callout,.demo-resize .callout{right:3%;bottom:6%}.demo-fixed .callout::before,.demo-resize .callout::before{right:100%;bottom:100%;transform:rotate(35deg)}
+.resize{position:absolute;inset:13% 4%;display:grid;grid-template-columns:40% 6px 38% 6px minmax(3rem,1fr);overflow:hidden}.resize>div{min-width:0;padding:1rem;border:1px solid #30343a;background:#111315}
+.resize .handle{position:relative;padding:0;border:0;background:var(--signal)}.resize .handle::after{content:"↔";position:absolute;top:46%;left:50%;transform:translate(-50%,-50%)}.resize .terminal{overflow:hidden;background:#030404;color:var(--cyan)}.resize .terminal span{display:block;width:16rem;white-space:nowrap}
+.cards{position:absolute;inset:15% 7%;display:grid;grid-template-columns:1fr 1fr;gap:.7rem;max-width:34rem;margin:auto}.card{min-width:0;padding:.8rem;border:1px solid #30343a;background:#08090a;overflow:hidden}
+.card small{color:var(--cyan);font-size:.56rem}.card h4{margin:.65rem 0;font-size:.7rem}.fake-button{padding:.6rem .2rem;background:#262a2e;color:#656b72;text-align:center;font-size:.56rem;font-weight:700}
+.mini-table{display:grid;grid-template-columns:repeat(4,minmax(3rem,1fr));width:23rem;font-size:.52rem}.mini-table span{padding:.4rem;border:1px solid #252a2f}
+.demo-cards .callout{right:5%;bottom:7%}.demo-cards .callout::before{right:100%;transform:rotate(18deg)}
+.table-wrap{position:absolute;inset:15% 5%;overflow:hidden;border:1px solid #30343a;background:#08090a}.broken-table{width:100%;border-collapse:collapse;table-layout:fixed;color:#cfd3d7;font-size:clamp(.46rem,1vw,.7rem)}
+.broken-table th,.broken-table td{padding:.55rem .35rem;border:0;border-right:1px solid #252a2f;border-bottom:1px solid #252a2f;word-break:break-all}.broken-table th{color:var(--cyan);text-align:left}.broken-table td:first-child{color:var(--amber)}.broken-table td:last-child{color:var(--signal)}
+.demo-table .callout{right:4%;bottom:4%}.demo-table .callout::before{right:100%;bottom:100%;transform:rotate(31deg)}
+.auth{position:absolute;inset:13% 17%;display:grid;place-items:center;background:#000c}.auth-box{width:min(27rem,88%);padding:clamp(1rem,3vw,2rem);border:1px solid var(--cyan);background:#020303;box-shadow:0 0 2rem #00e7ef20}
+.auth-box h4{margin:0 0 1.2rem;color:var(--cyan);font-size:clamp(.72rem,2vw,1rem)}.auth-input{padding:.8rem;border:1px solid #30343a;background:#111315;color:#fff;font-size:clamp(.63rem,1.8vw,.88rem);overflow:hidden;white-space:nowrap}
+.auth-button{margin-top:.8rem;padding:.8rem;background:var(--cyan);color:#001214;text-align:center;font-size:.72rem;font-weight:800}.demo-auth .callout{right:4%;bottom:6%}.demo-auth .callout::before{right:100%;bottom:100%;transform:rotate(26deg)}
+footer{padding:clamp(3rem,7vw,7rem) clamp(1.25rem,5vw,5rem);background:var(--signal);color:#180806}footer h2{max-width:13ch;margin:0 0 2rem;font:800 clamp(2.5rem,6vw,6rem)/.9 var(--display);letter-spacing:-.05em}
+footer p{max-width:70ch;margin:0 0 2rem;font-weight:650}footer a{display:inline-flex;min-height:44px;align-items:center;padding:.7rem 1rem;border:1px solid currentColor;text-decoration:none;font:700 .75rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase}
+@media(max-width:1100px){.layout{grid-template-columns:1fr}.toc{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--line)}.toc ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.toc li:nth-child(odd){border-right:1px solid var(--line)}.toc li:nth-child(even){padding-left:1rem}}
+@media(max-width:900px){.analysis,.intro{grid-template-columns:1fr}.analysis section+section{border-top:1px solid var(--line)}.fixed{width:145%}.module-grid{grid-template-columns:42% minmax(0,1fr)}}
+@media(max-width:640px){.hero{min-height:100dvh;padding:1.25rem}.hero::before,.incident::before{display:none}.hero h1{font-size:clamp(3.2rem,18vw,5.8rem)}.toc{padding:1rem}.toc ol{grid-template-columns:1fr}.toc li:nth-child(odd),.toc li:nth-child(even){border-right:0;padding-left:0}.intro,.incident,footer{padding-inline:1rem}.incident h2{font-size:clamp(2.1rem,13vw,3.7rem)}.mock{min-height:23rem;padding:.55rem}.overflow-box{inset-left:3%;width:62%}.callout{max-width:64%;font-size:.58rem}.knowledge{inset:9% 3% 14% 9%}.module-grid{inset:7% 2%;grid-template-columns:44% minmax(0,1fr)}.module-nav,.module-copy{padding:.6rem}.scroll-panel{inset:8% 6%}.fixed{inset-left:2%;width:170%}.resize{inset:9% 2%;grid-template-columns:42% 5px 43% 5px minmax(1.5rem,1fr)}.cards{inset:10% 3%;max-width:19rem}.table-wrap{inset:12% 2%}.auth{inset:9% 3%}}
+@media(prefers-reduced-motion:no-preference){.incident{opacity:.35;transform:translateY(1.5rem);transition:opacity .45s,transform .45s}.incident.is-visible{opacity:1;transform:none}}
+</style>
+</head>
+<body id="top">
+<div class="progress" aria-hidden="true"></div>
+<header class="hero">
+  <h1>10 ошибок на фронте</h1>
+</header>
+<div class="layout" id="report">
+<nav class="toc" aria-label="Оглавление ошибок">
+  <p class="toc-label">Реестр наблюдений</p>
+  <ol>
+    <li><a href="#inc-001" data-index="001">Код выходит за рамку</a></li>
+    <li><a href="#inc-002" data-index="002">Горизонтальный скролл</a></li>
+    <li><a href="#inc-003" data-index="003">Модуль не переключается</a></li>
+    <li><a href="#inc-004" data-index="004">Старая позиция теории</a></li>
+    <li><a href="#inc-005" data-index="005">Старая позиция задания</a></li>
+    <li><a href="#inc-006" data-index="006">Панели не помещаются</a></li>
+    <li><a href="#inc-007" data-index="007">Панели вытесняют терминал</a></li>
+    <li><a href="#inc-008" data-index="008">Карточки сжимаются</a></li>
+    <li><a href="#inc-009" data-index="009">Протокол теряет форму</a></li>
+    <li><a href="#inc-010" data-index="010">Готовое значение ID</a></li>
+  </ol>
+</nav>
+<main>
+<section class="intro" aria-labelledby="report-title">
+  <h2 id="report-title">Что именно исследовалось</h2>
+  <p>Отчёт рассматривает четыре основные зоны платформы: навигацию курса, инфо-панель задания, терминальную рабочую область и базу знаний. Примеры воссоздают интерфейс без подключения к backend и показывают только наблюдаемое проблемное состояние.</p>
+</section>
+
+<article class="incident" id="inc-001" aria-labelledby="inc-001-title" data-mark="001">
+<header><span class="index">INC-001</span><h2 id="inc-001-title">Длинный код выходит за границы инфо-панели</h2></header>
+<div class="analysis">
+<section><h3>Что видит пользователь</h3><p>Команда продолжает идти за правую рамку кодового блока. Текст оказывается поверх соседней области, а линия рамки проходит прямо через строку.</p></section>
+<section><h3>Почему это происходит</h3><p>Блок <code>pre</code> сохраняет строку целиком и не переносит её. Инфо-панель может стать уже команды, но внутренний кодовый блок не подстраивается под новую ширину.</p></section>
+<section><h3>К чему это приводит</h3><p>Граница перестаёт показывать принадлежность содержимого. Команду трудно прочитать и небезопасно копировать по частям.</p></section>
+</div>
+<figure class="evidence"><div class="mock demo-overflow"><div class="bar"><span>INFO_PANEL / GIT_INIT</span><span class="lights"><i></i><i></i><i></i></span></div><div class="panel overflow-box"><div class="panel-head">Команды для терминала</div><div class="panel-body"><pre class="code">git config --global user.name <span class="value">"Junior Dev"</span>
+git config --global user.email <span class="value">"junior@devops-sandbox.local"</span>
+git config --global init.defaultBranch main
+mkdir -p ~/devops-app</pre></div></div><span class="callout">Рамка пересекает строку</span></div><figcaption>Реконструкция узкой инфо-панели: содержимое сохраняет исходную ширину.</figcaption></figure>
+</article>
+
+<article class="incident" id="inc-002" aria-labelledby="inc-002-title" data-mark="002">
+<header><span class="index">INC-002</span><h2 id="inc-002-title">База знаний прокручивается по горизонтали</h2></header>
+<div class="analysis">
+<section><h3>Что видит пользователь</h3><p>Внизу правой панели появляется горизонтальная полоса. Чтобы дочитать команду, приходится сдвигать весь материал вправо, а затем возвращаться к началу строки.</p></section>
+<section><h3>Почему это происходит</h3><p>Длинные команды и таблицы оказываются шире контейнера. Для панели задана вертикальная прокрутка, но горизонтальное переполнение отдельно не ограничено.</p></section>
+<section><h3>К чему это приводит</h3><p>Чтение превращается в движение по двум осям. Контекст абзаца и начало команд постоянно уходят за край панели.</p></section>
+</div>
+<figure class="evidence"><div class="mock demo-hscroll"><div class="panel knowledge"><div class="panel-head">База знаний / Git &amp; GitLab</div><div class="wide"><h4>Настройка глобального профиля Git</h4><pre>git config --global user.email "junior@devops-sandbox.local"
+git config --global init.defaultBranch main</pre></div><div class="fake-scroll"></div></div><span class="callout">Чтение требует движения вправо</span></div><figcaption>Внутреннее содержимое шире видимой области базы знаний.</figcaption></figure>
+</article>
+
+<article class="incident" id="inc-003" aria-labelledby="inc-003-title" data-mark="003">
+<header><span class="index">INC-003</span><h2 id="inc-003-title">Заголовок модуля не переключает базу знаний</h2></header>
+<div class="analysis">
+<section><h3>Что видит пользователь</h3><p>Пользователь нажимает на заметный заголовок «Git &amp; GitLab», но справа продолжает отображаться материал Linux Foundations.</p></section>
+<section><h3>Почему это происходит</h3><p>Интерактивность назначена строкам заданий. Заголовок модуля визуально похож на элемент навигации, однако не участвует в выборе контента.</p></section>
+<section><h3>К чему это приводит</h3><p>Ожидаемое действие не даёт реакции. Пользователь воспринимает базу знаний как зависшую или не связанную с меню.</p></section>
+</div>
+<figure class="evidence"><div class="mock demo-module"><div class="module-grid"><div class="module-nav"><h4>&gt; Linux Foundations</h4><p class="active">Файловая система</p><h4 class="clicked">&gt; Git &amp; GitLab</h4><p>Инициализация репозитория</p><p>Первый коммит</p></div><div class="module-copy"><small>// БАЗА_ЗНАНИЙ : LINUX FOUNDATIONS</small><h4>Основы Linux для DevOps-инженера</h4><p>Файловая система Linux организована как единое дерево директорий, начинающееся от корня.</p></div></div><span class="callout">Клик есть, смены материала нет</span></div><figcaption>Заголовок Git выглядит выбранным, а заголовок контента остаётся прежним.</figcaption></figure>
+</article>
+
+<article class="incident" id="inc-004" aria-labelledby="inc-004-title" data-mark="004">
+<header><span class="index">INC-004</span><h2 id="inc-004-title">Новый модуль открывается на старой глубине прокрутки</h2></header>
+<div class="analysis">
+<section><h3>Что видит пользователь</h3><p>После перехода с длинной статьи Linux на Git новая статья показывается примерно с середины. Название и вступление находятся выше видимой области.</p></section>
+<section><h3>Почему это происходит</h3><p>HTML внутри панели меняется, но сам прокручиваемый контейнер остаётся тем же. Его текущая вертикальная позиция сохраняется.</p></section>
+<section><h3>К чему это приводит</h3><p>Пользователь не видит подтверждения смены раздела и может принять фрагмент нового текста за продолжение старого.</p></section>
+</div>
+<figure class="evidence"><div class="mock demo-scroll"><div class="panel scroll-panel"><span class="position">SCROLL 68%</span><div class="scrolled"><h4>Git: контроль версий</h4><p>Начало статьи уже находится выше видимой области.</p><pre>git status
+git add .
+git commit -m "Initial commit"</pre><p>Пользователь попадает сразу в середину объяснения рабочих состояний.</p></div><div class="meter"></div></div><span class="callout">Заголовок нового раздела остался выше</span></div><figcaption>Контент сменился, но панель сохранила прежнее значение вертикальной прокрутки.</figcaption></figure>
+</article>
+
+<article class="incident" id="inc-005" aria-labelledby="inc-005-title" data-mark="005">
+<header><span class="index">INC-005</span><h2 id="inc-005-title">Описание задания тоже сохраняет старую позицию</h2></header>
+<div class="analysis">
+<section><h3>Что видит пользователь</h3><p>После выбора следующего задания инфо-панель показывает нижнюю часть инструкции: пример команды или пояснение проверки вместо названия и условий.</p></section>
+<section><h3>Почему это происходит</h3><p>Выбранное задание меняет внутренний HTML, однако вертикальная позиция общего контейнера инфо-панели остаётся прежней.</p></section>
+<section><h3>К чему это приводит</h3><p>Пропускается контекст задачи. Пользователь начинает выполнять шаги, не увидев цель и обязательные условия.</p></section>
+</div>
+<figure class="evidence"><div class="mock demo-scroll"><div class="panel scroll-panel"><span class="position">TASK CHANGED / 74%</span><div class="scrolled"><h4>Dockerfile: рецепт сборки</h4><p>Верхняя часть с постановкой задачи скрыта.</p><pre>docker build -t devops-app:v1 .
+docker images devops-app</pre><p>На экране остались только поздние шаги инструкции.</p></div><div class="meter"></div></div><span class="callout">Новое задание начинается вне экрана</span></div><figcaption>Выбор изменился, но точка чтения сохранилась от предыдущего задания.</figcaption></figure>
+</article>
+
+<article class="incident" id="inc-006" aria-labelledby="inc-006-title" data-mark="006">
+<header><span class="index">INC-006</span><h2 id="inc-006-title">Четыре панели не помещаются в узкое окно</h2></header>
+<div class="analysis">
+<section><h3>Что видит пользователь</h3><p>При уменьшении окна правые части терминала и базы знаний исчезают. Интерфейс не перестраивается, а продолжает существовать за видимым краем.</p></section>
+<section><h3>Почему это происходит</h3><p>Навигация, инфо-панель и база знаний имеют фиксированную ширину. Центральная область дополнительно защищена минимальной шириной.</p></section>
+<section><h3>К чему это приводит</h3><p>Основные действия оказываются частично недоступны. Пользователь не может одновременно видеть задание, терминал и теорию.</p></section>
+</div>
+<figure class="evidence"><div class="mock demo-fixed"><div class="fixed"><div><h4>КУРС</h4><p>Linux<br>Git &amp; GitLab<br>Docker</p></div><div><h4>ИНФО-ПАНЕЛЬ</h4><p>Условие и длинный пример команды.</p></div><div class="terminal"><h4>ТЕРМИНАЛ</h4><p>$ docker compose up -d</p></div><div class="cut"><h4>БАЗА ЗНАНИЙ</h4><p>Эта колонка выходит за край viewport.</p></div></div><span class="callout">Правая панель обрезана окном</span></div><figcaption>Суммарная минимальная ширина колонок превышает доступное пространство.</figcaption></figure>
+</article>
+
+<article class="incident" id="inc-007" aria-labelledby="inc-007-title" data-mark="007">
+<header><span class="index">INC-007</span><h2 id="inc-007-title">Растягивание панелей вытесняет рабочую область</h2></header>
+<div class="analysis">
+<section><h3>Что видит пользователь</h3><p>После перетаскивания разделителей боковые колонки занимают почти весь экран, а терминал превращается в узкую полосу.</p></section>
+<section><h3>Почему это происходит</h3><p>Ширина каждой панели ограничивается отдельно. Суммарный размер всех панелей не сравнивается с фактической шириной окна.</p></section>
+<section><h3>К чему это приводит</h3><p>Главная рабочая зона исчезает, хотя каждая отдельная панель формально остаётся в разрешённом диапазоне.</p></section>
+</div>
+<figure class="evidence"><div class="mock demo-resize"><div class="resize"><div><h4>НАВИГАЦИЯ — 620 PX</h4><p>Развёрнутый список заданий занимает большую часть ширины.</p></div><div class="handle"></div><div><h4>ИНФО — 570 PX</h4><p>Описание задачи также растянуто.</p></div><div class="handle"></div><div class="terminal"><h4>ТЕРМИНАЛ</h4><span>$ kubectl get pods -n devops</span></div></div><span class="callout">Терминал остался полосой</span></div><figcaption>Локальные ограничения ширины не защищают центральную рабочую область.</figcaption></figure>
+</article>
+
+<article class="incident" id="inc-008" aria-labelledby="inc-008-title" data-mark="008">
+<header><span class="index">INC-008</span><h2 id="inc-008-title">Карточка задания и протокол становятся слишком узкими</h2></header>
+<div class="analysis">
+<section><h3>Что видит пользователь</h3><p>Заголовок задания собирается в много коротких строк, подпись кнопки сжимается, а справа видна только часть таблицы.</p></section>
+<section><h3>Почему это происходит</h3><p>Два блока всегда размещаются рядом в одной строке и делят доступную ширину пополам, независимо от размера центральной колонки.</p></section>
+<section><h3>К чему это приводит</h3><p>Основное действие и результат проверки становятся труднее заметить и прочитать именно в рабочей зоне.</p></section>
+</div>
+<figure class="evidence"><div class="mock demo-cards"><div class="cards"><div class="card"><small>// ТЕКУЩАЯ_ДИРЕКТИВА</small><h4>Переменные окружения: конфигурируй контейнер без пересборки</h4><div class="fake-button">ЗАПУСТИТЬ_ВЕРИФИКАЦИЮ</div></div><div class="card"><small>// ВЫВОД_СИСТЕМЫ</small><div class="mini-table"><span>YAML_ТИП</span><span>АЛГОРИТМ</span><span>ВЫВОД</span><span>РЕЗУЛЬТАТ</span></div></div></div><span class="callout">Оба блока делят недостаточную ширину</span></div><figcaption>Горизонтальная пара карточек сохраняется даже при недостатке места.</figcaption></figure>
+</article>
+
+<article class="incident" id="inc-009" aria-labelledby="inc-009-title" data-mark="009">
+<header><span class="index">INC-009</span><h2 id="inc-009-title">Таблица протокола теряет читаемую структуру</h2></header>
+<div class="analysis">
+<section><h3>Что видит пользователь</h3><p>Названия проверок и команды разрываются посередине слов. Строки становятся высокими, а соответствие между колонками теряется.</p></section>
+<section><h3>Почему это происходит</h3><p>Четыре колонки помещены в небольшой блок. Для длинных значений используется принудительный разрыв в любой точке символов.</p></section>
+<section><h3>К чему это приводит</h3><p>Протокол перестаёт быстро отвечать на вопрос, какая именно проверка завершилась ошибкой и какой вывод она получила.</p></section>
+</div>
+<figure class="evidence"><div class="mock demo-table"><div class="table-wrap"><table class="broken-table"><thead><tr><th>YAML_ТИП</th><th>АЛГОРИТМ (BASH КОМАНДА)</th><th>ВЫВОД СИСТЕМЫ</th><th>РЕЗУЛЬТАТ</th></tr></thead><tbody><tr><td>command_output</td><td>kubectl rollout status deployment/devops-app --timeout=120s</td><td>error: deployment exceeded its progress deadline</td><td>[ERR]</td></tr><tr><td>k8s_deployment_ready</td><td>Internal Check</td><td>Нет готовых реплик в namespace devops</td><td>[ERR]</td></tr></tbody></table></div><span class="callout">Слова разорваны внутри символов</span></div><figcaption>Агрессивное дробление текста разрушает визуальную сетку протокола.</figcaption></figure>
+</article>
+
+<article class="incident" id="inc-010" aria-labelledby="inc-010-title" data-mark="010">
+<header><span class="index">INC-010</span><h2 id="inc-010-title">Форма авторизации уже содержит некорректный ID</h2></header>
+<div class="analysis">
+<section><h3>Что видит пользователь</h3><p>Поле выглядит как подсказка «Ваше ID(по-английски)», но это уже введённое значение. Кнопка активна сразу после открытия.</p></section>
+<section><h3>Почему это происходит</h3><p>Текст подсказки хранится как фактическое значение поля. Проверка допускает любую непустую строку и не отличает пример от введённого ID.</p></section>
+<section><h3>К чему это приводит</h3><p>В создание песочницы отправляются кириллица, пробелы и скобки. Пользователь получает ошибку деплоя, хотя считает, что форма разрешила продолжить.</p></section>
+</div>
+<figure class="evidence"><div class="mock demo-auth"><div class="auth"><div class="auth-box"><h4>&gt; АВТОРИЗАЦИЯ ОПЕРАТОРА</h4><div class="auth-input">Ваше ID(по-английски)</div><div class="auth-button">ПОДТВЕРДИТЬ</div></div></div><span class="callout">Подсказка уже считается введённым ID</span></div><figcaption>Форма выглядит незаполненной, но её текущее значение уже проходит локальную проверку.</figcaption></figure>
+</article>
+
+<footer><h2>Один интерфейс, десять точек потери контекста</h2><p>Все наблюдения связаны общей причиной на уровне восприятия: визуальная форма обещает одно поведение, а фактическое состояние интерфейса сообщает другое. Затронуты компоновка, навигация, прокрутка, протокол проверок и первый вход в систему.</p><a href="#top">Вернуться к началу ↑</a></footer>
+</main>
+</div>
+<script>
+(() => {
+  const root = document.documentElement;
+  const incidents = [...document.querySelectorAll('.incident')];
+  const links = new Map([...document.querySelectorAll('.toc a')].map((link) => [link.getAttribute('href').slice(1), link]));
+  const updateProgress = () => {
+    const scrollable = root.scrollHeight - window.innerHeight;
+    const progress = scrollable > 0 ? Math.min(100, Math.max(0, window.scrollY / scrollable * 100)) : 0;
+    root.style.setProperty('--read-progress', progress + '%');
+  };
+  updateProgress();
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress);
+  if (!('IntersectionObserver' in window)) {
+    incidents.forEach((incident) => incident.classList.add('is-visible'));
+    return;
+  }
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-visible');
+      links.forEach((link) => link.removeAttribute('aria-current'));
+      const current = links.get(entry.target.id);
+      if (current) current.setAttribute('aria-current', 'true');
+    });
+  }, { rootMargin: '-22% 0px -62% 0px', threshold: 0 });
+  incidents.forEach((incident) => observer.observe(incident));
+})();
+</script>
+</body>
+</html>
